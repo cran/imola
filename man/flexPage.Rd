@@ -2,46 +2,38 @@
 % Please edit documentation in R/flex.R
 \name{flexPage}
 \alias{flexPage}
-\title{Create a page a with CSS flexbox layout}
+\title{Create a css flexbox based page}
 \usage{
 flexPage(..., title = NULL, fill_page = TRUE, dependency = bootstrapLib())
 }
 \arguments{
-\item{...}{Elements to include within the page}
+\item{...}{Arguments to be passed to \link{flexPanel}.}
 
-\item{title}{The browser window title (defaults to the host URL of the page)}
+\item{title}{The browser window title (defaults to the host URL of the page).}
 
-\item{fill_page}{Flag to tell the page if it should adjust the page to
-adjust and fill the browser window size}
+\item{fill_page}{Boolean value if the page should automatically stretch to
+match the browser window height.}
 
-\item{dependency}{The set of web dependencies. This value can be a
-htmlDependency, for example the shiny bootstrap one (the default)
-or a tagList with diferent dependencies}
+\item{dependency}{A set of web dependencies. This value can be a
+\link{htmlDependency}, for example the shiny bootstrap dependency (default
+value) or a \link{tagList} with different dependencies.}
 }
 \value{
-A UI definition that can be passed to the [shinyUI] function.
+A UI definition that can be passed to the \link{shinyUI} function.
 }
 \description{
-Create a page a with CSS flexbox layout
+Create a Shiny UI page using a \link{flexPanel} to wrap the page content.
+As other Shiny UI pages, it scaffolds the entire page and loads any required
+or registered dependencies.
 }
 \note{
 See
-  \url{https://css-tricks.com/snippets/css/a-guide-to-flexbox/}
-  for additional details on using css flexbox
-}
-\examples{
-if (interactive()) {
-library(imola)
-flexPage(
-  title = "A flex page",
-  div(class = "area-1"),
-  div(class = "area-2"),
-  div(class = "area-3")
-)
-}
-
+\url{https://css-tricks.com/snippets/css/a-guide-to-flexbox/}
+for additional details on using css flexbox.
 }
 \seealso{
-[flexPanel()]
+\link{flexPanel}
 }
-\concept{flex functions}
+\concept{flex}
+\keyword{flex}
+\keyword{page}

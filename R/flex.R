@@ -1,110 +1,161 @@
-#' Create a panel with a CSS flexbox layout
+#' Create a css flexbox based HTML tag
 #'
-#' @param ... Elements to include within the panel
-#' @param template The name of the template to use as a base for the grid.
-#'   See listTemplates() and registerTemplate() for more information.
-#' @param direction Direction of the flow of elements in the panel. Accepts a
-#'   valid css 'flex-direction' value (row | row-reverse | column |
-#'   column-reverse) By default the 'row' value is used.
-#'   Supports named list for breakpoints.
-#' @param wrap Should elements be allowed to wrap into multiple lines. Accepts
-#'   a valid css 'flex-wrap' value (nowrap | wrap | wrap-reverse). By default
-#'   the value 'wrap' is used.
-#'   Supports named list for breakpoints.
-#' @param justify_content Defines the alignment along the main axis. Accepts a
-#'   valid css 'justify-content' value (flex-start | flex-end | center |
-#'   space-between | space-around | space-evenly | start | end | left | right).
-#'   By default the value 'flex-start' is used.
-#'   Supports named list for breakpoints.
+#' @description
+#' Creates a HTML tag and automatically generates css style rules based on css
+#' flexbox, depending on the given arguments. Functionality acts as a way to
+#' generate css flexbox based HTML containers directly from R without the need
+#' to write any additional css rules directly.
+#'
+#' @param ... Tag attributes (named arguments) and child elements (unnamed
+#'   arguments).
+#'
+#'   Named arguments are treated as additional html attribute
+#'   values to the parent tag.
+#'
+#'   Child elements may include any combination of other tags objects, [HTML]
+#'   strings, and [htmlDependency]s.
+#' @param template The name of a registered template to use as a base for the
+#'   grid, or a template object from [gridTemplate].
+#' @param direction Direction of the flow of elements in the panel.
+#'
+#'   Accepts a valid css `flex-direction` value (`row` | `row-reverse` |
+#'    `column` | `column-reverse`).
+#'
+#'   Default value of `row` value is used. Supports breakpoints.
+#' @param wrap Should elements be allowed to wrap into multiple lines.
+#'
+#'   Accepts a valid css `flex-wrap` value (`nowrap` | `wrap` | `wrap-reverse`).
+#'
+#'   Supports breakpoints.
+#' @param justify_content The alignment along the main axis. Accepts a
+#'   valid css `justify-content` value (`flex-start` | `flex-end` | `center` |
+#'   `space-between` | `space-around` | `space-evenly` | `start` |
+#'    `end` | `left` | `right`).
+#'
+#'   Supports breakpoints.
 #' @param align_items Defines the default behavior for how flex items are laid
-#'   out along the cross axis on the current line. Accepts a valid css
-#'   'align-items' value (stretch | flex-start | flex-end | center | baseline |
-#'   first baseline | last baseline | start | end | self-start | self-end).
-#'   By default the value 'stretch' is used.
-#'   Supports named list for breakpoints.
+#'   out along the cross axis on the current line.
+#'
+#'   Accepts a valid css `align-items` value (`stretch` | `flex-start` |
+#'    `flex-end` | `center` | `baseline` | `first baseline` | `last baseline` |
+#'    `start` | `end` | `self-start` | `self-end`).
+#'
+#'   Supports breakpoints.
 #' @param align_content Aligns a flex container’s lines within when there is
-#'   extra space in the cross-axis. Accepts a valid css align-content' value
+#'   extra space in the cross-axis.
+#'
+#'   Accepts a valid css `align-content` value
 #'   (flex-start | flex-end | center | space-between | space-around |
 #'   space-evenly | stretch | start | end | baseline | first baseline |
-#'   last baseline). By default the value 'flex-start' is used.
-#'   Supports named list for breakpoints.
-#' @param gap Defines the space between elements in the panel. Defaults to 0.
-#'   Supports named list for breakpoints.
-#' @param flex A vector of valid css 'flex' values. Defines how elements in the
-#'   panel can grow and shrink. Each entry of the vector will afect the nth
-#'   child of the panel, meaning that it can be at maximum the lenght of the
-#'   elements in the panel. If smaller the vector will be repeated until the
-#'   pattern affects all elements in the panel. NA can also be used as a entry
-#'   of the vector to skip adding a rule to specific elements. By default c(1)
-#'   is used, meaning all elements can grow and shrink as required, at the same
-#'   rate. See notes for more information.
-#'   Supports named list for breakpoints.
+#'   last baseline).
+#'
+#'   Supports breakpoints.
+#' @param gap The space between elements in the panel. Controls both the
+#'   space between rows and columns.
+#'
+#'   Accepts a css valid value, or 2 values separated by a space (if using
+#'   different values for row and column spacing).
+#'
+#'   Supports breakpoints.
+#' @param flex A vector of valid css 'flex' values.
+#'   Defines how child elements in the panel can grow, shrink and their
+#'   initial size.
+#'
+#'   Arguments that target child elements require a vector of
+#'   values instead of a single value, with each entry of the vector affecting
+#'   the nth child element.
+#'
+#'   If the vector has less entries that the total number
+#'   of child elements, the values will be repeated until the pattern affects
+#'   all elements in the panel. If the vector as more entries that the
+#'   number of child elements, exceeding entries will be ignored. NA can also be
+#'   used as a entry to skip adding a rule to a specific child element.
+#'
+#'   Accepts a valid css `flex` value vector of values.
+#'
+#'   By default c(1) is used, meaning all elements can grow and shrink as
+#'   required, at the same rate. Supports breakpoints.
 #' @param grow A vector of valid css 'flex-grow' values. Defines the rate of
-#'   how elements can grow. Entries will overwrite the 'flex' values, and can
-#'   be used make more targeted rules. Each entry of the vector will afect the
-#'   nth child of the panel, meaning that it can be at maximum the lenght of
-#'   the elements in the panel. If smaller the vector will be repeated until
-#'   the pattern affects all elements in the panel. NA can also be used as a
-#'   entry of the vector to skip adding a rule to specific elements. By default
-#'   c() is used, meaning values from the flex argument will be used. See notes
-#'   for more information.
-#'   Supports named list for breakpoints.
+#'   how elements can grow.
+#'
+#'   Entries will overwrite the 'flex' values, and can
+#'   be used make more targeted rules.
+#'
+#'   Arguments that target child elements require a vector of
+#'   values instead of a single value, with each entry of the vector affecting
+#'   the nth child element.
+#'
+#'   If the vector has less entries that the total number
+#'   of child elements, the values will be repeated until the pattern affects
+#'   all elements in the panel. If the vector as more entries that the
+#'   number of child elements, exceeding entries will be ignored. NA can also be
+#'   used as a entry to skip adding a rule to a specific child element.
+#'
+#'   By default NULL is used, meaning values from the flex argument will be
+#'   used instead. Supports breakpoints.
 #' @param shrink A vector of valid css 'flex-shrink' values. Defines the rate
-#'   of how elements can shrink. Entries will overwrite the 'flex' values, and
-#'   can be used make more targeted rules. Each entry of the vector will afect
-#'   the nth child of the panel, meaning that it can be at maximum the lenght
-#'   of the elements in the panel. If smaller the vector will be repeated until
-#'   the pattern affects all elements in the panel. NA can also be used as a
-#'   entry of the vector to skip adding a rule to specific elements. By default
-#'   c() is used, meaning values from the flex argument will be used. See notes
-#'   for more information.
-#'   Supports named list for breakpoints.
+#'   of how elements can shrink. Entries will overwrite the nth 'flex' value,
+#'   and can be used make more targeted rules.
+#'
+#'   Arguments that target child elements require a vector of
+#'   values instead of a single value, with each entry of the vector affecting
+#'   the nth child element.
+#'
+#'   If the vector has less entries that the total number
+#'   of child elements, the values will be repeated until the pattern affects
+#'   all elements in the panel. If the vector as more entries that the
+#'   number of child elements, exceeding entries will be ignored. NA can also be
+#'   used as a entry to skip adding a rule to a specific child element.
+#'
+#'   By default NULL is used, meaning values from the flex argument will be
+#'   used instead. Supports breakpoints.
 #' @param basis  A vector of valid css 'flex-basis' values. Defines the base
-#'   size of elements. Entries will overwrite the 'flex' values, and can be
-#'   used make more targeted rules. Each entry of the vector will afect the nth
-#'   child of the panel, meaning that it can be at maximum the lenght of the
-#'   elements in the panel. If smaller the vector will be repeated until the
-#'   pattern affects all elements in the panel. NA can also be used as a entry
-#'   of the vector to skip adding a rule to specific elements. By default c()
-#'   is used, meaning values from the flex argument will be used. See notes for
-#'   more information.
-#'   Supports named list for breakpoints.
-#' @param breakpoint_system Optional Media breakpoints to use. Will default to
-#'   the current active breakpoint system.
-#' @param id The panel id. A randomly generated one is used by default.
+#'   size of elements. Entries will overwrite the nth 'flex' value,
+#'   and can be used make more targeted rules.
 #'
-#' @details Behaves similar to normal HTML div tags, but simplifies
-#'   the way css flexbox can be used from shiny.
+#'   Arguments that target child elements require a vector of
+#'   values instead of a single value, with each entry of the vector affecting
+#'   the nth child element.
 #'
-#' @note When creating responsive layouts based on media rules, for most
-#'   arguments a named list can be passed instead of a single value. The names
-#'   in the list can be any of the registered breakpoints available in
-#'   activeBreakpoints(). Breakpoints can also be modified with the
-#'   registerBreakpoint() and unregisterBreakpoint() functions. Arguments that
-#'   allow this are: direction | wrap | justify_content | align_items |
-#'   align_content | gap | flex | grow | shrink | basis.
+#'   If the vector has less entries that the total number
+#'   of child elements, the values will be repeated until the pattern affects
+#'   all elements in the panel. If the vector as more entries that the
+#'   number of child elements, exceeding entries will be ignored. NA can also be
+#'   used as a entry to skip adding a rule to a specific child element.
 #'
-#' @note See
-#'   \url{https://css-tricks.com/snippets/css/a-guide-to-flexbox/}
-#'   for additional details on using css flexbox
+#'   By default NULL is used, meaning values from the flex argument will be
+#'   used instead. Supports breakpoints.
+#' @param breakpoint_system Breakpoint system to use.
+#' @param id The parent element id.
 #'
-#' @family flexbox functions
-#' @seealso [flexPage()]
+#' @details Behaves similar to a normal HTML tag, but provides helping
+#'   arguments that simplify the way flexbox css can be created from shiny.
 #'
-#' @examples
-#' if (interactive()) {
-#' library(imola)
-#' flexPanel(
-#'   div("example content"),
-#'   div("example content"),
-#'   div("example content")
-#' )
-#' }
+#' @note When creating responsive layouts based on css media rules, some
+#'   arguments allow a named list can be passed instead of a single value.
 #'
-#' @importFrom magrittr "%>%"
+#'   The names in that list can be any of the breakpoints available in
+#'   the `breakpoint_system` argument.
+#'
+#'   It is recommended to define the breakpoint system for the application
+#'   globally before UI definitions, but the `breakpoint_system` in panel
+#'   functions allows for more flexibility when reusing components
+#'   from other projects.
+#'
+#'   See \url{https://css-tricks.com/snippets/css/a-guide-to-flexbox/}
+#'   for additional details on using css flexbox.
+#'
+#'   For a full list of valid HTML attributes check visit
+#'   \url{https://www.w3schools.com/tags/ref_attributes.asp}.
+#'
+#' @family flexbox
+#' @seealso [flexPage]
+#'
+#' @importFrom magrittr "%>%" "%<>%"
 #' @importFrom htmltools HTML
 #'
-#' @return An HTML tagList.
+#' @return An HTML [tagList].
+#' @keywords flex panel
 #' @export
 flexPanel <- function(...,
                       template = NULL,
@@ -118,7 +169,7 @@ flexPanel <- function(...,
                       grow = NULL,
                       shrink = NULL,
                       basis = NULL,
-                      breakpoint_system = activeBreakpoints(),
+                      breakpoint_system = getBreakpointSystem(),
                       id = generateID()) {
   # Children tags are non named tags passed as extra arguments
   number_children <- ifelse(
@@ -156,38 +207,32 @@ flexPanel <- function(...,
   )
 }
 
-#' Create a page a with CSS flexbox layout
+#' Create a css flexbox based page
 #'
-#' @param ... Elements to include within the page
-#' @param title The browser window title (defaults to the host URL of the page)
-#' @param fill_page Flag to tell the page if it should adjust the page to
-#'   adjust and fill the browser window size
-#' @param dependency The set of web dependencies. This value can be a
-#'   htmlDependency, for example the shiny bootstrap one (the default)
-#'   or a tagList with diferent dependencies
+#' @description
+#' Create a Shiny UI page using a [flexPanel] to wrap the page content.
+#' As other Shiny UI pages, it scaffolds the entire page and loads any required
+#' or registered dependencies.
+#'
+#' @param ... Arguments to be passed to [flexPanel].
+#' @param title The browser window title (defaults to the host URL of the page).
+#' @param fill_page Boolean value if the page should automatically stretch to
+#'   match the browser window height.
+#' @param dependency A set of web dependencies. This value can be a
+#'   [htmlDependency], for example the shiny bootstrap dependency (default
+#'   value) or a [tagList] with different dependencies.
 #'
 #' @note See
 #'   \url{https://css-tricks.com/snippets/css/a-guide-to-flexbox/}
-#'   for additional details on using css flexbox
+#'   for additional details on using css flexbox.
 #'
-#' @family flex functions
-#' @seealso [flexPanel()]
-#'
-#' @examples
-#' if (interactive()) {
-#' library(imola)
-#' flexPage(
-#'   title = "A flex page",
-#'   div(class = "area-1"),
-#'   div(class = "area-2"),
-#'   div(class = "area-3")
-#' )
-#' }
+#' @family flex
+#' @seealso [flexPanel]
 #'
 #' @importFrom shiny tagList tags bootstrapLib
-#' @importFrom magrittr "%>%"
 #'
 #' @return A UI definition that can be passed to the [shinyUI] function.
+#' @keywords flex page
 #' @export
 flexPage <- function(...,
                      title = NULL,

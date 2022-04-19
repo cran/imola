@@ -2,13 +2,12 @@
 % Please edit documentation in R/utils.R
 \name{valueToCSS}
 \alias{valueToCSS}
-\title{Converts a R List or vector object into a valid css string. Used primarily
-  to convert normalized attribute values into css values during processing.}
+\title{Process Object to css}
 \usage{
 valueToCSS(value, property)
 }
 \arguments{
-\item{value}{The list or vector with the values to be converted into css}
+\item{value}{List or vector with the values to be converted into css}
 
 \item{property}{The target css property for which the value will be used.}
 }
@@ -17,5 +16,7 @@ string containing a valid css value.
 }
 \description{
 Converts a R List or vector object into a valid css string. Used primarily
-  to convert normalized attribute values into css values during processing.
+to convert normalized attribute values into css values during processing.
 }
+\keyword{internal}
+\keyword{utils}
